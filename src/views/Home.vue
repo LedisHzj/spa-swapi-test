@@ -14,31 +14,30 @@
           </el-menu-item>
           <el-menu-item
             index="1"
-            @click="
-              handleClick(films);
-              togleFilms();
-            "
-            >Films</el-menu-item
+            @click="fetchData('films');"
+            >
+              Films
+            </el-menu-item
           >
           <el-menu-item
             index="2"
-            @click="
-              handleClick(people);
-              toglePeople();
-            "
-            >People</el-menu-item
+            @click="fetchData('people');"
+            >
+              People
+            </el-menu-item
           >
         </el-menu>
       </el-col>
     </el-row>
     <el-row>
-      <el-col v-if="isToggled">
+      <el-col v-if="active === 'films'">
         <el-card shadow="never">
           <el-table
             :data="returnedData"
             v-loading="loading"
             element-loading-text="Loading..."
             element-loading-spinner="el-icon-loading"
+            @cell-click="addSomething"
           >
             <el-table-column label="Title" prop="title"></el-table-column>
             <el-table-column label="Episode id" prop="episode_id"></el-table-column>
@@ -58,6 +57,7 @@
             v-loading="loading"
             element-loading-text="Loading..."
             element-loading-spinner="el-icon-loading"
+            @cell-click="addSomething"
           >
             <el-table-column label="Name" prop="name" width="140"></el-table-column>
             <el-table-column label="Height" prop="height"></el-table-column>
@@ -71,6 +71,11 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-row>
+      <el-row v-if="selectedItem" class="selected-items">
+        <el-col>{{itemDetails}}</el-col>
+      </el-row>
+    </el-row>
   </div>
 </template>
 
@@ -83,43 +88,56 @@ export default {
     return {
       returnedData: null,
       endpoint: "https://swapi.dev/api/",
-      films: "films",
-      people: "people",
-      isToggled: true,
       loading: false,
+      active: 'films',
+      selectedItem: null,
     };
   },
   created() {
-    this.handleClick(this.films);
+    this.fetchData('films');
+  },
+  computed: {
+    itemDetails: function () {
+      return Object.keys(this.selectedItem || {}).filter((key) => {
+        return Array.isArray(this.selectedItem[key]);
+      }).map((key) => {
+        return this.selectedItem[key].length + ' ' + key;
+      }).join(', ');
+    }
   },
   methods: {
-    handleClick(arg) {
+    fetchData(arg) {
       this.loading = true;
       axios
         .get(this.endpoint + arg)
         .then((response) => {
+          this.active = arg;
+          this.selectedItem = null;
           this.returnedData = response.data.results;
-          return this.returnedData;
         })
         .catch((error) => {
           console.log(error);
         })
         .finally(() => {
           this.loading = false;
-        }, 2000);
+        });
     },
-    togleFilms() {
-      this.isToggled = true;
+    addSomething(item) {
+      this.selectedItem = item;
     },
-    toglePeople() {
-      this.isToggled = false;
-    },
-  },
+  }
 };
 </script>
 
 <style scoped>
 .menu-row {
   margin-bottom: 28px;
+}
+
+.selected-items {
+  background-color: #d3dce6;
+  text-align: center;
+  padding: 20px;
+  margin-top: 10px;
 }
 </style>
