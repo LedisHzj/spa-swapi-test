@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import {Row, Col} from 'element-ui'
+import {Row, Col, Container, Header, Main, Divider, Menu, MenuItem} from 'element-ui'
 import lang from 'element-ui/lib/locale/lang/en'
 import locale from 'element-ui/lib/locale'
 import "@/assets/element-variables.scss"
@@ -17,6 +17,12 @@ locale.use(lang)
 // import components
 Vue.use(Row)
 Vue.use(Col)
+Vue.use(Container)
+Vue.use(Header)
+Vue.use(Main)
+Vue.use(Divider)
+Vue.use(Menu)
+Vue.use(MenuItem)
 
 new Vue({
   router,
