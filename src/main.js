@@ -2,8 +2,21 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import {Row, Col} from 'element-ui'
+import lang from 'element-ui/lib/locale/lang/en'
+import locale from 'element-ui/lib/locale'
+import "@/assets/element-variables.scss"
 
 Vue.config.productionTip = false
+
+Vue.prototype.$ELEMENT = { size: 'small', zIndex: 3000 };
+
+// configure language
+locale.use(lang)
+
+// import components
+Vue.use(Row)
+Vue.use(Col)
 
 new Vue({
   router,
