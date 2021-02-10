@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <el-row>
+    <el-row class="menu-row">
       <el-col>
         <el-menu
           mode="horizontal"
@@ -12,21 +12,63 @@
           <el-menu-item>
             <img style="width: 40px; height: 40px;" src="../assets/logo.png" />
           </el-menu-item>
-          <el-menu-item index="1" @click="handleClick('films')">Films</el-menu-item>
-          <el-menu-item index="2" @click="handleClick('people')">People</el-menu-item>
+          <el-menu-item
+            index="1"
+            @click="
+              handleClick(films);
+              togleFilms();
+            "
+            >Films</el-menu-item
+          >
+          <el-menu-item
+            index="2"
+            @click="
+              handleClick(people);
+              toglePeople();
+            "
+            >People</el-menu-item
+          >
         </el-menu>
       </el-col>
     </el-row>
-    <el-row v-for="(item, index) in returnedData" :key="index">
-      <el-col v-if="item.title">
-        <ul>
-          <li >{{item.title}}</li>
-        </ul>
+    <el-row>
+      <el-col v-if="isToggled">
+        <el-card shadow="never">
+          <el-table
+            :data="returnedData"
+            v-loading="loading"
+            element-loading-text="Loading..."
+            element-loading-spinner="el-icon-loading"
+          >
+            <el-table-column label="Title" prop="title"></el-table-column>
+            <el-table-column label="Episode id" prop="episode_id"></el-table-column>
+            <el-table-column label="Director" prop="director"></el-table-column>
+            <el-table-column label="Producer" prop="producer"></el-table-column>
+            <el-table-column
+              label="Release date"
+              prop="release_date"
+            ></el-table-column>
+          </el-table>
+        </el-card>
       </el-col>
-      <el-col v-if="item.name">
-        <ul>
-          <li>{{item.name}}</li>
-        </ul>
+      <el-col v-else>
+        <el-card shadow="never">
+          <el-table
+            :data="returnedData"
+            v-loading="loading"
+            element-loading-text="Loading..."
+            element-loading-spinner="el-icon-loading"
+          >
+            <el-table-column label="Name" prop="name" width="140"></el-table-column>
+            <el-table-column label="Height" prop="height"></el-table-column>
+            <el-table-column label="Mass" prop="mass"></el-table-column>
+            <el-table-column label="Hair Color" prop="hair_color"></el-table-column>
+            <el-table-column label="Skin Color" prop="skin_color"></el-table-column>
+            <el-table-column label="Eye Color" prop="eye_color"></el-table-column>
+            <el-table-column label="Birth Year" prop="birth_year"></el-table-column>
+            <el-table-column label="Gender" prop="gender"></el-table-column>
+          </el-table>
+        </el-card>
       </el-col>
     </el-row>
   </div>
@@ -41,13 +83,18 @@ export default {
     return {
       returnedData: null,
       endpoint: "https://swapi.dev/api/",
+      films: "films",
+      people: "people",
+      isToggled: true,
+      loading: false,
     };
   },
-  created(){
-    this.handleClick('films');
+  created() {
+    this.handleClick(this.films);
   },
   methods: {
     handleClick(arg) {
+      this.loading = true;
       axios
         .get(this.endpoint + arg)
         .then((response) => {
@@ -56,8 +103,23 @@ export default {
         })
         .catch((error) => {
           console.log(error);
-        });
+        })
+        .finally(() => {
+          this.loading = false;
+        }, 2000);
+    },
+    togleFilms() {
+      this.isToggled = true;
+    },
+    toglePeople() {
+      this.isToggled = false;
     },
   },
 };
 </script>
+
+<style scoped>
+.menu-row {
+  margin-bottom: 28px;
+}
+</style>
